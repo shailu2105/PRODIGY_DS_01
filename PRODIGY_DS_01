@@ -1,0 +1,32 @@
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the dataset (downloaded CSV from World Bank)
+df = pd.read_csv('/content/API_SP.POP.TOTL_DS2_en_csv_v2_19373.csv', skiprows=4)
+
+# Inspect the first few rows (optional)
+# print(df.head())
+
+# Select a specific country to visualize, e.g., India
+country_name = 'India'
+country_data = df[df['Country Name'] == country_name]
+
+# Extract the years and corresponding population values
+years = list(map(str, range(1960, 2024)))  # 1960 to 2023
+population_values = country_data.loc[:, years].values.flatten()
+
+# Convert values to integers (handle missing data)
+population_values = pd.to_numeric(population_values, errors='coerce')
+
+# Plot the population trend
+plt.figure(figsize=(12, 6))
+plt.plot(years, population_values, marker='o', color='skyblue')
+plt.title(f'Total Population of {country_name} (1960–2023)')
+plt.xlabel('Year')
+plt.ylabel('Population')
+plt.grid(True)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
