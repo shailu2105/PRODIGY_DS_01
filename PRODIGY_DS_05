@@ -1,0 +1,35 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+file_path = '/mnt/data/dataset_traffic_accident_prediction1.csv'
+df = pd.read_csv(file_path)
+critical_columns = ['Weather', 'Road_Condition', 'Time_of_Day', 'Accident']
+df_clean = df.dropna(subset=critical_columns)
+weather_accidents = df_clean.groupby('Weather')['Accident'].sum().sort_values(ascending=False)
+road_condition_accidents = df_clean.groupby('Road_Condition')['Accident'].sum().sort_values(ascending=False)
+time_of_day_accidents = df_clean.groupby('Time_of_Day')['Accident'].sum().sort_values(ascending=False)
+sns.set(style="whitegrid")
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+sns.barplot(x=weather_accidents.index, y=weather_accidents.values, ax=axes[0])
+axes[0].set_title("Accidents by Weather")
+axes[0].set_ylabel("Number of Accidents")
+sns.barplot(x=road_condition_accidents.index, y=road_condition_accidents.values, ax=axes[1])
+axes[1].set_title("Accidents by Road Condition")
+axes[1].set_ylabel("Number of Accidents")
+axes[1].tick_params(axis='x', rotation=20)
+sns.barplot(x=time_of_day_accidents.index, y=time_of_day_accidents.values, ax=axes[2])
+axes[2].set_title("Accidents by Time of Day")
+axes[2].set_ylabel("Number of Accidents")
+
+plt.tight_layout()
+plt.show()
+weather_time_heatmap = df_clean.pivot_table(index='Weather', columns='Time_of_Day', values='Accident', aggfunc='sum')
+road_time_heatmap = df_clean.pivot_table(index='Road_Condition', columns='Time_of_Day', values='Accident', aggfunc='sum')
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+sns.heatmap(weather_time_heatmap, annot=True, fmt=".0f", cmap="YlGnBu", ax=axes[0])
+axes[0].set_title("Accidents: Weather vs Time of Day")
+sns.heatmap(road_time_heatmap, annot=True, fmt=".0f", cmap="YlOrRd", ax=axes[1])
+axes[1].set_title("Accidents: Road Condition vs Time of Day")
+
+plt.tight_layout()
+plt.show()
